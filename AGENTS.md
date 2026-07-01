@@ -7,6 +7,15 @@
 
 ---
 
+## How to Use This File
+
+Universal rules for ALL agents. Read this first, always.
+- **Planning agents (Claude Code, Codex):** Read this + `~/agent-governance/AGENTS.planning.md`
+- **Execution agents (Pi + GPT-5.4-mini):** Read this + `~/agent-governance/AGENTS.execution.md`
+Do not read both extension files. Each agent reads only its own.
+
+---
+
 ## Stack context
 
 Python (ML/RL/research), TypeScript/Node, occasionally Bash.
@@ -80,83 +89,7 @@ following files. If a file does not exist, stop and flag it — do not proceed.
 | `README.md` of every module you will touch | Module scope, entry points, restrictions |
 | `docs/session_state.md` | Current implementation state if resuming |
 
-**SKILLS.md does not exist. Skills are individual files. See §Skills Reference for paths.**
-
----
-
-## 1.5. Planning Phase Protocol
-
-This section governs planning sessions (spec, architecture, task breakdown).
-It applies when there is no code to write yet. Follow every step in order.
-Do not improvise. Do not combine steps.
-
-### Step 1 — Read mandatory context
-Before writing any planning document, open and read:
-- `docs/ai_context/DOC_TAXONOMY.md`
-- `docs/ai_context/CODEBASE_MAP.md`
-- `docs/ai_context/SYSTEM_WORKFLOW_MAP.md`
-- `docs/ai_context/AGENT_EXECUTION_LOG.md`
-
-If any of these is missing, create it from the template in `~/agent-governance/templates/`
-before proceeding.
-
-### Step 2 — Spec
-READ `~/agent-governance/skills/core/write-spec/SKILL.md` fully.
-Follow every step in that file.
-OUTPUT the confirmed spec to `docs/specs/NNN_feature_name.md`.
-**STOP. Do not proceed until the human explicitly types approval.**
-
-### Step 3 — Plan
-READ `~/agent-governance/skills/core/write-plan/SKILL.md` fully.
-Follow every step in that file.
-OUTPUT the technical plan to `docs/plans/NNN_feature_name.md`.
-**STOP. Do not proceed until the human explicitly types approval.**
-
-### Step 4 — Task decomposition
-READ `~/agent-governance/skills/core/decompose-tasks/SKILL.md` fully.
-Follow every step in that file.
-Task file goes to `docs/tasks/NNN_feature_name.md`.
-Each task must include: what, where, how, model hint, parallel group, verify command.
-**STOP. Do not proceed until the human explicitly types approval.**
-
-### Step 5 — Checkpoint coverage audit (mandatory, before outputting tasks)
-After drafting the task file but before outputting it, run this self-audit:
-- Does every module the feature touches have at least one task for `interfaces.py`?
-- Does every required output file (JSON, manifest, config) have a task that owns writing it?
-- Does every behavior in the confirmed spec appear in at least one task's "what to build"?
-- Does every phase end with an explicit `verify-checkpoint` task?
-- Have flags from `AGENT_EXECUTION_LOG.md` been incorporated (avoiding known bad approaches)?
-
-If any gap is found, patch the task file before outputting it.
-
-### Step 6 — Sequential execution prompt (mandatory output, not optional)
-After the task file is approved, produce `docs/execution-plans/NN-seq-exec-prompt.md`.
-This is a required planning output. Do not wait to be asked.
-READ `~/agent-governance/skills/core/decompose-tasks/SKILL.md` §Execution Prompt section
-for the exact format. The prompt must cover: sequential task loop, per-task verify,
-fix-before-proceed, context-stop at 60–70%, new-session handoff.
-
-### Step 7 — Documentation verification
-After all planning docs are produced:
-- Verify all files are at the paths specified by `DOC_TAXONOMY.md`.
-- Verify `session_state.md` references all new planning docs.
-- Verify `CODEBASE_MAP.md` and `SYSTEM_WORKFLOW_MAP.md` reflect any structural decisions.
-
----
-
-## 2. Pre-Implementation Checklist
-
-**Complete all steps before writing any code.**
-
-- [ ] All documents in §1 have been opened and read.
-- [ ] READ `~/agent-governance/skills/core/discover-codebase/SKILL.md` — identify all related files.
-- [ ] Spec exists at `docs/specs/`. If not, execute Planning Phase Protocol §1.5 first.
-- [ ] Plan exists at `docs/plans/`. If not, run §1.5 Steps 3–7 first.
-- [ ] Tasks exist at `docs/tasks/`. If not, run §1.5 Steps 4–7 first.
-- [ ] Which module owns the behavior being implemented is confirmed.
-- [ ] Whether similar functionality already exists is confirmed — no duplication.
-- [ ] Every file the change will affect is listed before touching any of them.
-- [ ] Layer plan (§3) is produced for any multi-file change.
+**Skills are individual .md files in . See AGENTS.planning.md or AGENTS.execution.md for the relevant skill reference table.**
 
 ---
 
@@ -205,46 +138,6 @@ Layer 5 — Schemas / Utils   Data contracts, config, stateless helpers.
 - No `run_full_pipeline()` that contains all logic — it must compose stage functions.
 - No notebooks importing internal files (`core/`, `schemas/`) directly.
 - No low-level utilities importing high-level feature modules.
-
----
-
-## 4. Implementation Workflow
-
-All substantial feature implementation follows this sequence.
-For each step, READ the skill file at the path shown. Do not skip or substitute.
-
-```
-discover-codebase     READ ~/agent-governance/skills/core/discover-codebase/SKILL.md
-    ↓
-write-spec            READ ~/agent-governance/skills/core/write-spec/SKILL.md
-    ↓ OUTPUT spec
-    ↓ *** HARD STOP — do not continue until human types explicit approval ***
-write-plan            READ ~/agent-governance/skills/core/write-plan/SKILL.md
-    ↓ OUTPUT plan
-    ↓ *** HARD STOP — do not continue until human types explicit approval ***
-decompose-tasks       READ ~/agent-governance/skills/core/decompose-tasks/SKILL.md
-    ↓ OUTPUT tasks + execution prompt
-    ↓ *** HARD STOP — do not continue until human types explicit approval ***
-    ↓
-[for each phase]
-    implement task    READ ~/agent-governance/skills/core/implement-feature/SKILL.md
-    observability     READ ~/agent-governance/skills/core/add-observability/SKILL.md
-    tests             READ ~/agent-governance/skills/core/write-tests/SKILL.md
-    checkpoint        READ ~/agent-governance/skills/core/verify-checkpoint/SKILL.md
-                      *** HARD STOP — gate before next phase ***
-    if stopping       READ ~/agent-governance/skills/core/handoff-coding-agent/SKILL.md
-    ↓
-notebook              READ ~/agent-governance/skills/core/design-feature-notebook/SKILL.md
-update-codebase-map   READ ~/agent-governance/skills/core/update-codebase-map/SKILL.md
-update-system-diagram READ ~/agent-governance/skills/core/update-system-diagram/SKILL.md
-update-docs           READ ~/agent-governance/skills/core/update-docs/SKILL.md
-    ↓
-self-check (§12)
-write to AGENT_EXECUTION_LOG.md (§16)
-```
-
-**Never skip the plan or task breakdown.** Even for trivial features, a one-sentence plan
-and one-task task file still takes 5 minutes and prevents mistakes.
 
 ---
 
@@ -320,18 +213,71 @@ READ `~/agent-governance/skills/core/add-observability/SKILL.md` for exact patte
 
 ## 9. Forbidden Patterns
 
-- **No giant pipeline functions.** One function = one responsibility.
-- **No hardcoded values.** Paths, model names, thresholds, credentials → `config/` or `.env`.
-- **No duplicated schemas.** One canonical location. Do not redefine what already exists.
-- **No dead code in active files.** Deprecated code → `archive/YYYY-MM/<original_path>`.
-- **No commented-out code as backup.** Use version control.
-- **No silent exceptions.** Every caught error must be logged with actionable context before re-raise.
-- **No shared utilities buried in a single feature module.** Move to `utils/`.
-- **No outputs written to source directories.** All run outputs → `execution_results/`.
-- **No task marked `[x]` before its Verify step passes.**
-- **No approach flagged as FAILED in `AGENT_EXECUTION_LOG.md` repeated without explicit human override.**
+**Lazy wrappers — function form:**
+```python
+# FORBIDDEN
+def get_paths():                    # Body is one call with no transformation
+    return _get_paths()
 
----
+# CORRECT
+from .module import _get_paths as get_paths   # Direct re-export
+```
+A public function whose entire body is a single delegating call must not exist. Re-export directly with `from .module import func as public_name`. Only create a wrapper function when the task explicitly specifies one with a stated reason (e.g., input validation, type coercion, composition of 2+ calls).
+
+**Lazy wrappers — assignment form:**
+```python
+# FORBIDDEN — no docstring, no justification, two names for one function
+run_code_graph_extraction = run_extraction_pipeline
+
+# CORRECT — if two names are genuinely needed, document why
+# run_code_graph_extraction is the public name; run_extraction_pipeline kept for backward compat
+run_code_graph_extraction = run_extraction_pipeline
+```
+Module-level assignment aliases must have a comment explaining why two names exist. If no justification can be stated, remove one name.
+
+**Silent exception swallows — any form:**
+```python
+# FORBIDDEN — all of these
+except Exception: pass
+except Exception: return None
+except Exception as e: return {}
+except Exception as e: return default
+```
+Every caught exception must be logged with context before the function returns or re-raises. No exceptions.
+
+**Broad catch with post-hoc filtering:**
+```python
+# FORBIDDEN
+except Exception as exc:
+    if not _is_sdk_error(exc):
+        raise
+    raise WrappedError(exc) from exc
+
+# CORRECT — catch the specific type directly
+except SdkBaseError as exc:
+    raise WrappedError(exc) from exc
+```
+
+**No giant pipeline functions.** One function = one responsibility. If you write "and" in a function name, split it.
+
+**No hardcoded values.** Paths, model names, thresholds, credentials → `config/` or `.env`.
+
+**No duplicated schemas.** One canonical location. Do not redefine what already exists.
+
+**No dead code in active files.** Deprecated code → `archive/YYYY-MM/<original_path>`.
+
+**No commented-out code as backup.** Use version control.
+
+**No silent exceptions.** Every caught error must be logged with actionable context before re-raise.
+
+**No shared utilities buried in a single feature module.** Move to `utils/`.
+
+**No outputs written to source directories.** All run outputs → `execution_results/`.
+
+**No task marked `[x]` before its Verify step passes.**
+
+**No approach flagged as FAILED in `AGENT_EXECUTION_LOG.md` repeated without explicit human override.**
+
 
 ## 10. Code Standards
 
@@ -364,15 +310,6 @@ If implementation diverges from the spec, update the spec to match reality.
 ---
 
 ## 12. Self-Check Before Finalizing
-
-**Skill compliance (check first):**
-- [ ] Every phase executed this session had its skill file READ before starting.
-- [ ] Planning phases: spec, plan, tasks each had explicit human approval before proceeding.
-- [ ] Checkpoint coverage audit was run and all gaps were patched before tasks were output.
-- [ ] Sequential execution prompt was produced as part of task decomposition (not prompted by human).
-- [ ] `DOC_TAXONOMY.md` was read before creating any documentation file.
-- [ ] All produced documents live at paths specified in `DOC_TAXONOMY.md`.
-- [ ] `AGENT_EXECUTION_LOG.md` was read before starting and written to after completing.
 
 **Code quality:**
 - [ ] No logic duplicated from an existing module.
@@ -432,38 +369,6 @@ Output this after every task. Do not omit sections — write `None` if nothing t
 
 ---
 
-## 14. Model Hints
-
-Planning agents (Claude Code, Codex) annotate each task in `docs/tasks/` with a
-model hint. The executing agent (Pi or others) reads this hint and selects the
-appropriate model from the project's Model Registry in the project AGENTS.md.
-
-**Task model hint format:**
-```
-**Model hint:** <alias>
-**Rate limit flag:** yes | no
-**Fallback:** <alias>
-```
-
-**Global default model registry** (project AGENTS.md overrides these):
-
-| Alias | Use case | Notes |
-|---|---|---|
-| `planning` | Spec, plan, decompose-tasks | Claude Code or Codex only; not Pi execution |
-| `complex-reasoning` | Debugging, architecture decisions, multi-file refactors | Paid tier; no rate limit concern |
-| `fast-code` | Boilerplate, simple functions, schema definitions | May be free tier; flag rate limit |
-| `local` | Simple edits, renaming, formatting, low-stakes changes | Local Ollama; unlimited |
-
-**Rate limit handling rules:**
-- If `rate_limit_flag: yes` and the model returns 429: wait 60 seconds, retry once.
-- If still rate-limited after retry: fall back to the `fallback` alias for that task.
-- Log the fallback in the Change Report and in `AGENT_EXECUTION_LOG.md`.
-- Never silently substitute a model without logging it.
-- When grouping tasks for execution, prefer batching same-model tasks together to
-  minimize context switches and reduce API call frequency.
-
----
-
 ## 15. Parallel Execution Rules
 
 Tasks within a phase may execute in parallel if they have no data dependency.
@@ -516,29 +421,3 @@ This log is not optional. Skipping it means the next agent or next session repea
 the same mistakes. That is a protocol violation.
 
 ---
-
-## Skills Reference
-
-READ means: open the file, read it fully, follow every step in order.
-Do not substitute your own procedure. Do not skip steps.
-
-| Situation | READ this file |
-|---|---|
-| Before any implementation | `~/agent-governance/skills/core/discover-codebase/SKILL.md` |
-| No spec exists yet | `~/agent-governance/skills/core/write-spec/SKILL.md` |
-| Spec confirmed, need technical plan | `~/agent-governance/skills/core/write-plan/SKILL.md` |
-| Plan confirmed, need agent task list | `~/agent-governance/skills/core/decompose-tasks/SKILL.md` |
-| Starting implementation of a task | `~/agent-governance/skills/core/implement-feature/SKILL.md` |
-| End of a development phase | `~/agent-governance/skills/core/verify-checkpoint/SKILL.md` |
-| Session ending mid-task | `~/agent-governance/skills/core/handoff-coding-agent/SKILL.md` |
-| Writing a feature notebook | `~/agent-governance/skills/core/design-feature-notebook/SKILL.md` |
-| Adding logging and print tracing | `~/agent-governance/skills/core/add-observability/SKILL.md` |
-| Writing unit tests | `~/agent-governance/skills/core/write-tests/SKILL.md` |
-| Creating a new module directory | `~/agent-governance/skills/core/write-module-readme/SKILL.md` |
-| Designing full module layer structure | `~/agent-governance/skills/core/design-layered-module/SKILL.md` |
-| Writing any new class or 3+ related functions | `~/agent-governance/skills/core/design-python-code/SKILL.md` |
-| Core directory growing beyond 4 files | `~/agent-governance/skills/core/design-python-code/SKILL.md` |
-| After any structural change | `~/agent-governance/skills/core/update-codebase-map/SKILL.md` |
-| After pipeline or module relationship changes | `~/agent-governance/skills/core/update-system-diagram/SKILL.md` |
-| After any implementation | `~/agent-governance/skills/core/update-docs/SKILL.md` |
-| Designing parallel task groups | `~/agent-governance/skills/core/parallel-execution/SKILL.md` |
