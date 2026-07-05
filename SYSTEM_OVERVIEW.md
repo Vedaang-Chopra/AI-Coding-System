@@ -150,6 +150,7 @@ Required files every project should maintain:
 | `docs/ai_context/CODEBASE_MAP.md` | Module ownership, entry points, Mermaid dependency diagram |
 | `docs/ai_context/SYSTEM_WORKFLOW_MAP.md` | End-to-end pipeline flowchart |
 | `docs/ai_context/AGENT_EXECUTION_LOG.md` | Cross-session agent log — **read before starting any task, write after finishing** |
+| `docs/ai_context/pi_agent_tooling_guide.md` | Operator guide for external coding agents using this Pi setup |
 | `docs/specs/NNN_feature.md` | Feature requirements: WHAT + WHY (not HOW) |
 | `docs/plans/NNN_feature.md` | Technical plan: HOW (architecture, layer assignments, file inventory) |
 | `docs/tasks/NNN_feature.md` | Executable agent task list with model hints, parallel groups, verify commands |

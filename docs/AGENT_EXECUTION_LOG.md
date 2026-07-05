@@ -67,6 +67,41 @@ Copy this block and fill it in. Add at the TOP of the Entries section.
 
 <!-- New entries go HERE, at the top -->
 
+## Task: 002 — Pi Agent Tooling Guide
+**Date:** 2026-07-05
+**Agent:** Codex
+**Model:** GPT-5
+**Status:** ✓ Complete
+
+**Approach taken:**
+Created a documentation-only operator guide for external coding agents that need to use this machine's existing Pi setup. Grounded the guide in the governance repo files and installed Pi docs for CLI modes, tools, trust, skills, extensions, packages, prompt templates, RPC, SDK, and security behavior.
+
+**What worked:**
+The guide was added at `docs/ai_context/pi_agent_tooling_guide.md` with practical command patterns for subprocess, RPC, SDK, extension-worker, skill, package, and prompt-template workflows. `SYSTEM_OVERVIEW.md` now lists the guide in the documentation structure.
+
+**What failed:**
+Nothing.
+
+**Root cause:**
+Not applicable.
+
+**Resolution:**
+Future agents can read `docs/ai_context/pi_agent_tooling_guide.md` before using Pi as a worker or coordinating Pi from another harness.
+
+**Files modified:**
+- `docs/ai_context/pi_agent_tooling_guide.md`
+- `SYSTEM_OVERVIEW.md`
+- `docs/AGENT_EXECUTION_LOG.md`
+
+**Verify result:**
+`test -f docs/ai_context/pi_agent_tooling_guide.md`; required-topic `rg`; discoverability `rg`; placeholder `rg`; and `git diff --check` were run after writing.
+
+**Model fallback used:** no
+
+**DO NOT REPEAT:**
+- Do not describe built-in Pi subagents, plan mode, permission popups, built-in MCP, built-in to-dos, or background bash as core features.
+- Do not assume project-local Pi resources load in non-interactive mode without trust or `--approve`.
+
 <!-- Example entry — delete when real entries are added:
 
 ## EXAMPLE-1 — Build repair loop core
