@@ -56,7 +56,22 @@ A notebook should let a human answer:
 
 ---
 
-## Required Structure
+## Two Modes
+
+This skill defines two notebook modes. Both call production code and
+never reimplement it; both follow the Rules below. They differ in when
+they're produced and how much structure is required:
+
+| Mode | When | Structure | Companion test |
+|---|---|---|---|
+| **Feature-completion mode** (below) | Once, when a feature is fully complete | Full 10 sections, fixed, ≥5 stage cells, ≥3 assertions, ≥1 edge case | `tests/integration/test_<feature>_integration.py` |
+| **Checkpoint mode** (see below, after §10) | Per-phase, only when `decompose-tasks` states Type B applies for that phase | Lightweight, sequential, no fixed section count | Python-equivalent only when the phase's output needs to be re-runnable later |
+
+`plan-pi-execution`'s Rule 2 mandatory group-level understanding notebook
+(`notebooks/understanding/<group_id>.ipynb`) uses **checkpoint mode**,
+scoped to the group's capability — not feature-completion mode.
+
+## Required Structure (Feature-Completion Mode)
 
 ### Section 1 — Purpose
 ```markdown
@@ -217,6 +232,50 @@ Run with: `LOG_LEVEL=DEBUG python -m module.runners`
 
 Not tested: concurrent execution, very large inputs (>10k records).
 ```
+
+---
+
+## Checkpoint Mode (Per-Phase, Lightweight)
+
+Produced per-phase, only when `decompose-tasks`'s phase-sizing rule states
+Type B applies for that phase (new/materially changed code — not setup,
+config, or non-generative work). Its purpose is narrower than
+feature-completion mode: let the human open one file and understand what
+this phase built, without reading a diff, and decide if the next phase
+needs adjustment.
+
+**What it requires:**
+- Runs top-to-bottom sequentially, no hidden state — same rule as
+  feature-completion mode.
+- Breaks the phase's work into simple, readable steps — not a single call
+  to one wrapper function. This is the same forbidden pattern called out
+  under "What a Notebook Is (and Is Not)" above; checkpoint mode must
+  avoid it the same way feature-completion mode does.
+- Is **not** required to have a fixed section count, and is not required
+  to be exhaustive. It does not need the 10-section structure, the ≥5
+  stage-cell minimum, or the ≥3-assertion minimum that feature-completion
+  mode requires.
+- Visuals/plots are encouraged where they clarify what happened, but are
+  not mandatory.
+- Should be paired with a Python-equivalent file when the phase's output
+  needs to be re-runnable by an agent later, following the same
+  public-entry-point-only import rule as feature-completion mode's
+  companion test. Not every checkpoint-mode notebook requires a companion
+  — only when later re-runnability is actually needed.
+
+**What it does NOT replace:**
+- The full feature-completion mode notebook, produced once when the whole
+  feature is done — checkpoint mode is a lighter-weight sibling, not a
+  substitute.
+- `verify-checkpoint`'s Type A (`write-tests`) mechanical correctness
+  gate — Type A and Type B test different things; neither substitutes for
+  the other.
+
+**Used by `plan-pi-execution`:** a pi execution group's mandatory Rule 2
+understanding notebook (`notebooks/understanding/<group_id>.ipynb` +
+`tests/integration/test_<group_id>_integration.py`) is checkpoint mode,
+scoped to the group's capability instead of a phase's — same lightweight
+rules apply.
 
 ---
 

@@ -50,6 +50,23 @@ OUTPUT: `docs/tasks/NNN_feature_name.md`
 OUTPUT: `docs/execution-plans/NN-seq-exec-prompt.md` (mandatory, produce after approval)
 **HARD STOP — do not continue until human explicitly approves.**
 
+### Step 4b — Pi Execution Grouping
+**Gate:** Run this step only if any task from Step 4 is hinted `fast-code`/`local`. If no such task exists, skip directly to Step 5.
+READ `~/agent-governance/skills/core/plan-pi-execution/SKILL.md` fully.
+Cluster `fast-code`/`local`-hinted tasks into pi execution groups sized by
+one demonstrable capability (the boundary test: "once every task in this
+group is done, what can the system now demonstrably do that it couldn't
+before?"). Groups sit alongside — never replace — the Phases/Parallel
+Groups from Step 4.
+OUTPUT: `docs/specs/pi_agent_tasks/<group_id>/GROUP.md` per group.
+
+**Completion criteria before Step 5 proceeds:**
+- Every pi-bound task belongs to exactly one `group_id`.
+- Every group's `GROUP.md` has a genuinely observable capability sentence, or is marked `exempt` with a stated reason.
+- No group depends on a later group.
+- `execute-tasks-with-pi`'s `<group>` folder name matches `group_id` exactly.
+- Group Coverage Audit (from `plan-pi-execution`) run with no unpatched gaps.
+
 ### Step 5 — Checkpoint Coverage Audit (run before outputting tasks)
 - Every module the feature touches has at least one task covering its interface layer
 - Every required output file has an owning task
@@ -82,6 +99,8 @@ Must include: sequential task loop, per-task verify, fix-before-proceed, context
 | Plan involves a pipeline runner | `~/agent-governance/skills/core/design-runner/SKILL.md` |
 | Plan involves creating a new module directory | `~/agent-governance/skills/core/create-module/SKILL.md` |
 | Tasks can execute in parallel | `~/agent-governance/skills/core/parallel-execution/SKILL.md` |
+| Task's model hint is `fast-code`/`local` and will be dispatched to pi CLI, one atomic task at a time with independent re-verification | `~/agent-governance/skills/core/execute-tasks-with-pi/SKILL.md` |
+| Any task is hinted `fast-code`/`local` (run Step 4b before Step 5) | `~/agent-governance/skills/core/plan-pi-execution/SKILL.md` |
 
 ---
 
@@ -130,3 +149,4 @@ Rate limit handling: wait 60s → retry once → fall back → log in Change Rep
 - [ ] Fixed Plan Structure was followed completely — all 11 sections present
 - [ ] Interface Design Decisions completed for every task touching interfaces.py or __init__.py
 - [ ] Error/Return Contracts specified for every new public function
+- [ ] If any task is `fast-code`/`local`-hinted: Step 4b run, every such task assigned to exactly one `group_id`, and no group marked `[done]` without both understanding-checkpoint files or a stated `exempt` reason

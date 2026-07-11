@@ -1,0 +1,8 @@
+{
+  "name": "pi",
+  "version": "0.1.0",
+  "description": "Run Pi Coding Agent jobs through a shared shell controller.",
+  "author": {
+    "name": "OpenAI"
+  }
+}

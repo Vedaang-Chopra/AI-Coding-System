@@ -26,6 +26,21 @@ before they compound into the next phase.
 1. Open `docs/tasks/<NNN>_feature.md` and find the Checkpoint block for the
    current phase.
 2. Run every item in the checkpoint block — commands, assertions, artifact checks.
+2b. Confirm the phase's stated Type A / Type B decision (per
+    `decompose-tasks`'s phase-sizing rule):
+    - **Type A** always applies — confirm the `write-tests` checks for
+      this phase pass.
+    - **Type B**, if the phase's task file states it applies — confirm
+      the promised checkpoint-mode notebook (`design-feature-notebook`)
+      exists and runs top-to-bottom. If the phase's tasks were dispatched
+      through `plan-pi-execution` groups, confirm the existing
+      `notebooks/understanding/<group_id>.ipynb` and
+      `tests/integration/test_<group_id>_integration.py` files exist and
+      pass instead — do not require a second, redundant phase-level
+      notebook.
+    - If Type B was promised but the notebook (or group-level equivalent)
+      does not exist or does not run clean, this is a FAIL item — treat
+      it exactly like any other failed checkpoint item below.
 3. For each item, record: result (PASS/FAIL), actual output, notes.
 4. If any item FAILS:
    - Stop. Do not patch silently and re-run.
@@ -89,6 +104,10 @@ Valid:
 - Specific notebook section runs from top to bottom without raising
 - File exists at a specific path and is non-empty
 - `grep -r "hardcoded_value" module/` returns no results
+- Type A checks (`write-tests`) pass for the phase
+- If Type B applies: the phase's checkpoint-mode notebook (or the
+  equivalent `plan-pi-execution` group-level notebook + integration test)
+  exists and runs top-to-bottom
 
 Not valid (do not use as checkpoint items):
 - "The code looks correct"

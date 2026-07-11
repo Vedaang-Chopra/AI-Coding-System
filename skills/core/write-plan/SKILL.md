@@ -99,6 +99,16 @@ Ordered implementation sequence. Always: schemas → core → orchestration → 
 
 These budgets are copied into the task file as hard constraints for Pi.
 
+If tasks from this plan will be dispatched one-at-a-time via
+`execute-tasks-with-pi` (rather than one long interactive Pi session), keep
+Sections 5/6 (Files to Create/Modify) at single-file granularity wherever
+feasible now, at plan time. A "Files to Modify" row that bundles 5 files under
+one description forces `decompose-tasks` to either split it later with less
+context than the plan author had, or hand Pi a multi-file task — both worse
+than splitting it here. This does not apply when tasks will run in one
+interactive Pi session instead (that pattern can hold more context across
+files within the session).
+
 ### Section 9 — Integration Points
 Where this feature touches existing modules. What breaks if this plan is wrong.
 
@@ -144,5 +154,9 @@ What "done" looks like. Specific runnable commands for each major acceptance cri
 ## Related Skills
 
 * `SKILL: write-spec` — run before this
-* `SKILL: decompose-tasks` — run after this is confirmed
+* `SKILL: decompose-tasks` — run after this is confirmed; also the
+  canonical source for the phase-sizing rule and Type A/Type B test-type
+  decision every phase must state — not restated here
 * `SKILL: design-layered-module` — use if layer assignments are unclear
+* `SKILL: execute-tasks-with-pi` — if tasks will be dispatched one-at-a-time to
+  Pi, see its guidance on file granularity before finalizing Sections 5/6

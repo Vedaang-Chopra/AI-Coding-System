@@ -4,7 +4,7 @@
 > rules, skills, workflow, and forbidden patterns. Written for an AI reader, not a human.
 > Keep this file updated as the system evolves.
 >
-> **Last updated:** 2026-07-01
+> **Last updated:** 2026-07-11
 
 ---
 
@@ -19,7 +19,7 @@
 | [§5 Implementation Workflow](#5-implementation-workflow) | Ordered sequence with hard gates |
 | [§6 5-Layer Architecture](#6-5-layer-architecture) | Module structure model, non-negotiable |
 | [§7 Documentation Structure](#7-documentation-structure) | Required files every project maintains |
-| [§8 Core Skills (24)](#8-core-skills-24) | Trigger → Produces → Key gates, per skill |
+| [§8 Core Skills (25)](#8-core-skills-25) | Trigger → Produces → Key gates, per skill |
 | [§9 Utility Skills (6)](#9-utility-skills-6) | Token compression, debugging, teaching |
 | [§10 Forbidden Patterns](#10-forbidden-patterns) | What an agent must never do |
 | [§11 Task Model Hints](#11-task-model-hints) | How tasks annotate model selection |
@@ -42,7 +42,7 @@
 | Execution rules (Pi + GPT-5.4-mini only) | `~/agent-governance/AGENTS.execution.md` |
 | Project overrides | `<project-root>/AGENTS.md` — extends global, no duplication |
 | Template for new projects | `~/agent-governance/templates/project-AGENTS.md` |
-| Core skills (24) | `~/agent-governance/skills/core/<skill-name>/SKILL.md` |
+| Core skills (25) | `~/agent-governance/skills/core/<skill-name>/SKILL.md` |
 | Utility skills (6) | `~/agent-governance/skills/utility/<skill-name>/` |
 
 **Stack context:** Python (ML/RL/research), TypeScript/Node, occasionally Bash. For project-specific stack, read the project `AGENTS.md` first. If none exists, ask.
@@ -88,6 +88,12 @@ write-plan          → OUTPUT: docs/plans/NNN_feature.md
 decompose-tasks     → OUTPUT: docs/tasks/NNN_feature.md
                              + docs/execution-plans/NN-seq-exec-prompt.md
     ↓ *** HARD STOP — do not continue until human explicitly approves ***
+
+plan-pi-execution   → (only if any task hinted fast-code/local)
+                      OUTPUT: docs/specs/pi_agent_tasks/<group_id>/GROUP.md per group
+    ↓ *** GATE — group's understanding checkpoint (notebook + Python integration
+         test, authored by the planning agent) must exist before the NEXT
+         group may dispatch. Not required for groups marked exempt. ***
 
 [Pi receives execution prompt:]
   PRE-FLIGHT: docs/tasks/ non-empty? AGENT_EXECUTION_LOG read? → if no: STOP
@@ -162,7 +168,7 @@ Templates live at `~/agent-governance/templates/`.
 
 ---
 
-## 8. Core Skills (24)
+## 8. Core Skills (25)
 
 Each entry: **what it does** | **when to invoke** | **what it produces** | **key gates**.
 
@@ -223,6 +229,7 @@ Each entry: **what it does** | **when to invoke** | **what it produces** | **key
 - Every component maps to exactly ONE layer.
 - If two components want same file but different layers → design error, split file.
 - Plan is a living document: if implementation diverges → update plan, do not leave stale.
+- Points to (does not restate) `decompose-tasks`'s phase-sizing rule and Type A/Type B test-type decision.
 
 ---
 
@@ -241,6 +248,17 @@ Each entry: **what it does** | **when to invoke** | **what it produces** | **key
 - Every phase MUST end with a `verify-checkpoint` task.
 - Every parallel group MUST have a sync point immediately after it.
 - Free-tier model tasks in the same parallel group must be staggered or reassigned to different models.
+- **Canonical home of the phase-sizing rule:** a phase is one demonstrable
+  capability, sized by the one-sentence boundary test "once every task in
+  this phase is done, what can the system now demonstrably do that it
+  couldn't before?" — stated in full in `decompose-tasks/SKILL.md` §3;
+  `plan-pi-execution`'s group boundary test points here rather than
+  restating it.
+- Every phase must state a **Type A** decision (always applies —
+  `write-tests`) and a **Type B** decision (yes/no + one-line reason —
+  checkpoint-mode notebook via `design-feature-notebook`, satisfied by
+  existing group-level files when the phase's tasks ran through
+  `plan-pi-execution`).
 - **Checkpoint Coverage Audit must pass before outputting tasks:**
   - Every touched module has a task for `interfaces.py`
   - Every required output file has an owning task
@@ -248,6 +266,28 @@ Each entry: **what it does** | **when to invoke** | **what it produces** | **key
   - Every phase has a `verify-checkpoint` task
   - Every parallel group has a sync point
   - All FAILED patterns from `AGENT_EXECUTION_LOG.md` noted in affected tasks
+  - Every phase maps to one stated capability, not a task count
+  - Every phase states a Type A/B decision with reason
+
+---
+
+### `plan-pi-execution`
+**What:** Cluster `fast-code`/`local`-hinted tasks into pi execution groups sized by one demonstrable capability, and gate the next group's dispatch on a mandatory understanding checkpoint.
+
+**Invoke when:** After `decompose-tasks`, only if any task is hinted `fast-code`/`local`. Before dispatching any task through `execute-tasks-with-pi`.
+
+**Produces:** `docs/specs/pi_agent_tasks/<group_id>/GROUP.md` per group; `notebooks/understanding/<group_id>.ipynb` + `tests/integration/test_<group_id>_integration.py` per non-exempt group, authored by the planning agent.
+
+**Key gates:**
+- Boundary test is `decompose-tasks`'s canonical phase-sizing rule (§3),
+  applied to the subset of a phase's tasks that are Pi-dispatched — a
+  group is a Pi-specific refinement nested inside a phase, not a
+  separately defined unit.
+- Every pi-bound task belongs to exactly one `group_id`; no group depends on a later group.
+- `execute-tasks-with-pi`'s `<group>` folder name must match `group_id` exactly.
+- Understanding checkpoint (notebook + Python integration test) is mandatory before the next group may be marked `[done]`, unless the group is marked `exempt` with a stated reason (no observable behavior change). The notebook is `design-feature-notebook`'s checkpoint mode, scoped to the group's capability.
+- Pi never authors the understanding checkpoint — Claude Code writes both files directly from pi's already-verified diffs and run outputs.
+- Understanding checkpoint never replaces `verify-checkpoint`'s mechanical correctness gate, and vice versa — both are required, independent gates.
 
 ---
 
@@ -325,6 +365,10 @@ Each entry: **what it does** | **when to invoke** | **what it produces** | **key
 - Do NOT mark any checkpoint item passed until entire block passes.
 - If all PASS and "Human sign-off required: YES" → STOP and wait for confirmation.
 - Valid checkpoint items only: binary pass/fail, mechanically runnable (`pytest`, `python -m`, import checks, file exists, grep). NOT valid: "looks correct", "should be working", "no obvious errors".
+- Confirm Type A (`write-tests`) passes for the phase; if Type B was
+  stated, confirm the checkpoint-mode notebook (or, for pi-execution-group
+  phases, the existing group-level notebook + integration test) exists and
+  runs top-to-bottom — a missing promised notebook is a FAIL item.
 
 ---
 
@@ -333,7 +377,7 @@ Each entry: **what it does** | **when to invoke** | **what it produces** | **key
 
 **Invoke when:** Creating a new notebook for any feature/module/workflow. Updating notebook after feature changes.
 
-**Produces:** Jupyter notebook with 10 required sections. Every notebook produced must have a Python equivalent at `tests/integration/test_<feature>_integration.py` — runnable via pytest, authoritative test, same assertions.
+**Produces:** Two modes in one file. Feature-completion mode (existing): Jupyter notebook with 10 required sections, produced once when a feature is complete, with a mandatory Python equivalent at `tests/integration/test_<feature>_integration.py` — runnable via pytest, authoritative test, same assertions. Checkpoint mode (new): lightweight, sequential, per-phase notebook with no fixed section count, produced only when `decompose-tasks` states Type B applies for that phase; also used by `plan-pi-execution`'s group-level understanding notebook.
 
 **Key gates:**
 - **Stage function pre-check (gate before writing):** Enumerate all workflow stages. Every stage must have a callable function in the interface. If any stage lacks one, fix the Tier 1 interface first — do not write the notebook and do not import from `core/` as a workaround.
@@ -347,6 +391,10 @@ Each entry: **what it does** | **when to invoke** | **what it produces** | **key
 - Cells run top-to-bottom with no hidden state.
 - Import only from public entry points — never from `core/`.
 - Clear outputs before committing (unless saved report).
+- **Checkpoint mode** does not require the 10-section structure, the ≥5
+  stage-cell minimum, or the ≥3-assertion minimum — it exists to let a
+  human understand what a phase built, not to serve as the full
+  feature-completion artifact.
 
 ---
 
@@ -729,6 +777,8 @@ An agent must never do any of the following:
 - **Outputs written to source directories.** All run outputs → `execution_results/`.
 - **Marking task `[x]` before its Verify step passes.**
 - **Repeating an approach flagged FAILED in `AGENT_EXECUTION_LOG.md`** without explicit human override.
+- **Dispatching a group's understanding notebook to pi.** Pi executes tasks; it does not decide what's worth demonstrating or write the notebook/Python-equivalent pair — that is always the planning agent's job.
+- **Marking a pi execution group `[done]` without both understanding-checkpoint files or an explicit `exempt` reason in `GROUP.md`.**
 
 ---
 

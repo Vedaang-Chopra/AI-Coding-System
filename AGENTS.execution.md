@@ -107,6 +107,10 @@ When a task produces a notebook:
 - It must be runnable: `pytest tests/integration/test_<feature_name>_integration.py -v`
 - The Python file is the authoritative test. The notebook is for human inspection only.
 
+Group-level understanding notebooks (one per pi execution group, per
+`plan-pi-execution`) are authored by the planning agent, not by you (Pi) —
+if your task doesn't explicitly ask you to create a notebook, don't create one.
+
 ---
 
 ## After Every Task

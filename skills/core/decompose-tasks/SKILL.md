@@ -64,11 +64,60 @@ Organize tasks into phases matching the technical plan.
 Within each phase, run the dependency analysis from `parallel-execution.md` §2
 before assigning groups.
 
+### Phase sizing rule (canonical — do not restate elsewhere)
+
+A phase is not a task count and not an arbitrary boundary. A phase is:
+
+> **A sequence of related tasks that, together, produce one demonstrable capability — something with a verifiable goal, small enough to execute unsupervised, large enough that checking after every individual task would be wasteful.**
+
+**Boundary test — must be answerable in one sentence:** *"Once every task
+in this phase is done, what can the system now demonstrably do that it
+couldn't before?"* If that sentence can't be written, the boundary is
+wrong: two phases are really one capability split by convenience (merge
+them), or one phase is actually two unrelated capabilities bolted together
+(split it).
+
+A phase is valid when all of the following hold:
+- Tasks in it are related in sequence (each builds toward the same capability).
+- There is something concrete to point at when it's done (a function that
+  runs, an output that exists, a behavior that's observable) — not just
+  "code was written."
+- It is small enough to hand to an execution agent and walk away, not so
+  large that a failure midway is expensive to diagnose.
+
+This is the same test `plan-pi-execution` uses for a pi execution group's
+boundary — a group is this same rule applied to the subset of a phase's
+tasks that are Pi-dispatched, nested inside the phase rather than an
+independent unit. `plan-pi-execution` points here rather than restating
+the rule.
+
+### Two test types — required per phase
+
+Every phase's task output must state which of two distinct verification
+types apply:
+
+- **Type A — Syntactical (for the agent).** The existing `write-tests`
+  skill, unchanged. Confirms the code is correct. Always applies to every
+  phase.
+- **Type B — Understanding checkpoint (for the human).** A lightweight,
+  per-phase Jupyter notebook (checkpoint mode — see
+  `design-feature-notebook`) that lets a human see what was built in this
+  phase without reading a diff. Not every phase gets one — it applies when
+  the phase produced new or materially changed code, not for setup,
+  config, or non-generative work. State the decision with a one-line
+  reason (e.g., "Phase 2: no notebook — dependency install only" /
+  "Phase 3: notebook required — new extraction pipeline built"). For a
+  phase whose tasks were dispatched through `plan-pi-execution` groups,
+  Type B is satisfied by the existing group-level understanding-checkpoint
+  files — do not require a second, redundant phase-level notebook.
+
 ```markdown
 ## Phase N — [Phase Name]
 **Goal:** [one sentence]
 **Entry condition:** [what must be true before this phase starts]
 **Exit condition (checkpoint):** [what must be true for this phase to be complete]
+**Type A:** write-tests (always applies)
+**Type B:** [yes — <one-line reason> | no — <one-line reason>]
 
 ### Dependency Analysis
 | Task | Reads from | Writes to | Depends on |
@@ -232,3 +281,17 @@ Before presenting the task file and execution prompt to the human:
 - [ ] Free-tier model tasks in the same parallel group are staggered or reassigned.
 - [ ] Execution prompt is produced at the correct path.
 - [ ] `docs/session_state.md` is updated to show planning complete, tasks ready.
+
+---
+
+## Related Skills
+
+- `execute-tasks-with-pi` — an alternative to this skill's own §6 Sequential
+  Execution Prompt (one long interactive pi session working through many
+  tasks) for `fast-code`/`local`-hinted tasks: dispatches one non-interactive
+  pi call per atomic task instead, with independent re-verification after
+  each one. Prefer it when the execution model has a known reliability gap on
+  compound instructions.
+- `verify-checkpoint` — run at every phase's final task.
+- `handoff-coding-agent` — write `docs/session_state.md` when a session ends
+  mid-execution.
