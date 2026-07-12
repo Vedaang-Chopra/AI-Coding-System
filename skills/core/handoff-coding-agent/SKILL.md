@@ -147,3 +147,7 @@ If blocked:
 * `SKILL: verify-checkpoint` — run before this at the end of a phase
 * `SKILL: decompose-tasks` — the tasks.md this file references
 * `SKILL: implement-feature` — the outer workflow that calls this
+* `SKILL: handoff` — use that skill instead, not this one, for wrapping up
+  a general conversation with no `docs/tasks/<NNN>.md` phase workflow in
+  progress. It writes a one-off `/tmp/handoff_*.md` rather than this
+  skill's always-overwritten `docs/session_state.md`.

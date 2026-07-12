@@ -1,3 +1,10 @@
+> **ARCHIVED:** 2026-07-12
+> **Reason:** Content fully subsumed by `grill-with-docs` — its `<what-to-do>` block restates this skill's entire interview procedure near-verbatim, and `grill-with-docs` already degrades to identical behavior when no `CONTEXT.md`/domain model exists. See spec `docs/specs/005_skill_audit.md`, Finding F2.
+> **Replaced by:** `skills/utility/grill-with-docs/SKILL.md`
+> **Safe to delete after:** when confirmed stable
+
+---
+
 ---
 name: grill-me
 description: Interview the user relentlessly about a plan or design until reaching shared understanding, resolving each branch of the decision tree. Use when user wants to stress-test a plan, get grilled on their design, or mentions "grill me".

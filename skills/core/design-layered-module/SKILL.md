@@ -387,7 +387,11 @@ Use with:
 
 * `SKILL: discover-codebase`
 * `SKILL: create-module`
-* `SKILL: design-runner`
+* `SKILL: design-runner` — this skill's Tier 2 section states the
+  `run_full_pipeline()`-is-a-call-list rule in passing as part of the layer
+  model; `design-runner` is the canonical, detailed procedure for actually
+  writing a `runners.py` — read that skill directly when the task is
+  specifically about designing or refactoring a runner file.
 * `SKILL: design-feature-notebook`
 * `SKILL: update-codebase-map`
 * `SKILL: refactor-module`

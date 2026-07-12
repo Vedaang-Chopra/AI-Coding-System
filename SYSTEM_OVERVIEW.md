@@ -19,8 +19,9 @@
 | [§5 Implementation Workflow](#5-implementation-workflow) | Ordered sequence with hard gates |
 | [§6 5-Layer Architecture](#6-5-layer-architecture) | Module structure model, non-negotiable |
 | [§7 Documentation Structure](#7-documentation-structure) | Required files every project maintains |
-| [§8 Core Skills (25)](#8-core-skills-25) | Trigger → Produces → Key gates, per skill |
-| [§9 Utility Skills (6)](#9-utility-skills-6) | Token compression, debugging, teaching |
+| [§8 Core Skills (26)](#8-core-skills-26) | Trigger → Produces → Key gates, per skill |
+| [§9 Utility Skills (5)](#9-utility-skills-5) | Token compression, debugging, teaching |
+| [§9b Optional Skills (0)](#9b-optional-skills-0) | Opt-in tier, currently empty |
 | [§10 Forbidden Patterns](#10-forbidden-patterns) | What an agent must never do |
 | [§11 Task Model Hints](#11-task-model-hints) | How tasks annotate model selection |
 | [§12 Change Report](#12-required-change-report) | Required output after every task |
@@ -29,7 +30,9 @@
 
 ## 1. What This System Is
 
-`~/agent-governance/` is a personal governance repository that controls how AI agents (Claude Code, Pi, Codex) behave across all projects. It is the single source of truth for: behavioral rules, git safety constraints, a 5-layer architecture model, an ordered implementation workflow, and a library of 30 skills. Projects extend the global rules via local `AGENTS.md` files — they never duplicate global content. The system is documentation-first and phase-gated: no code before discovery, no implementation before spec + plan + tasks are confirmed by the human.
+`~/agent-governance/` is a personal governance repository that controls how AI agents (Claude Code, Pi, Codex) behave across all projects. It is the single source of truth for: behavioral rules, git safety constraints, a 5-layer architecture model, an ordered implementation workflow, and a skill library. Projects extend the global rules via local `AGENTS.md` files — they never duplicate global content. The system is documentation-first and phase-gated: no code before discovery, no implementation before spec + plan + tasks are confirmed by the human.
+
+**Skill count (kept broken out by tier — a single blanket figure has gone stale before):** 26 core + 5 utility + 0 optional = **31 active skills**. The optional tier (`skills/optional/`) exists for future opt-in, per-project skills but currently has none — its last occupants (an `mcp-graph` integration) were archived when their MCP dependency was retired (see §9b). One additional skill is staged for relocation out of this repo entirely, not counted above (see §9b).
 
 ---
 
@@ -168,7 +171,7 @@ Templates live at `~/agent-governance/templates/`.
 
 ---
 
-## 8. Core Skills (25)
+## 8. Core Skills (26)
 
 Each entry: **what it does** | **when to invoke** | **what it produces** | **key gates**.
 
@@ -288,6 +291,22 @@ Each entry: **what it does** | **when to invoke** | **what it produces** | **key
 - Understanding checkpoint (notebook + Python integration test) is mandatory before the next group may be marked `[done]`, unless the group is marked `exempt` with a stated reason (no observable behavior change). The notebook is `design-feature-notebook`'s checkpoint mode, scoped to the group's capability.
 - Pi never authors the understanding checkpoint — Claude Code writes both files directly from pi's already-verified diffs and run outputs.
 - Understanding checkpoint never replaces `verify-checkpoint`'s mechanical correctness gate, and vice versa — both are required, independent gates.
+
+---
+
+### `execute-tasks-with-pi`
+**What:** Dispatch individual `fast-code`/`local`-hinted tasks from `docs/tasks/` to the pi CLI one atomic task per non-interactive invocation, with independent re-verification and a durable JSON run log — an alternative to `decompose-tasks`'s own long-session Sequential Execution Prompt.
+
+**Invoke when:** After `decompose-tasks` (and, if the task is pi-bound, after `plan-pi-execution` has clustered it into a group). Before dispatching any `fast-code`/`local` task, when the execution model has a known reliability gap on compound instructions and a per-task verification checkpoint is wanted instead of trusting a longer autonomous run.
+
+**Produces:** One `task-N.md` / `test-N.md` pair per atomic task; append-only JSON run log at `docs/specs/pi_agent_tasks/pi_run_log.json`; per-task NDJSON output captured via `tools/pi_agent/run_pi_task.py`.
+
+**Key gates:**
+- Never call `pi` directly and check `$?` — its process exit code is not a reliable success signal. Always dispatch through `run_pi_task.py` and check `agent_end_seen` instead.
+- One atomic task per dispatch: one file, one change, one explicit constraint list, one verification command (or short fixed list) — split further than seems necessary for a small/unreliable execution model.
+- Independent verification is mandatory after every task — a second LLM's self-report ("yes it passed") is not evidence; the verification prompt must demand complete verbatim command output, not a summary.
+- `<group>` folder name must match `plan-pi-execution`'s `group_id` exactly.
+- Log every dispatch (execution and verification) as its own record in the JSON run log; link a verification run's `run_id` back to the execution run it checked.
 
 ---
 
@@ -663,7 +682,7 @@ Each entry: **what it does** | **when to invoke** | **what it produces** | **key
 
 ---
 
-## 9. Utility Skills (6)
+## 9. Utility Skills (5)
 
 ---
 
@@ -704,23 +723,10 @@ Each entry: **what it does** | **when to invoke** | **what it produces** | **key
 
 ---
 
-### `grill-me`
-**What:** Interview the user relentlessly about a plan or design until reaching shared understanding.
-
-**Invoke when:** User wants to stress-test a plan or design. "Grill me on this."
-
-**Key gates:**
-- Ask questions one at a time.
-- Provide recommended answer with each question.
-- Walk down each branch of the decision tree, resolve each before proceeding.
-- If question is answerable by exploring codebase → explore codebase instead of asking.
-
----
-
 ### `grill-with-docs`
-**What:** Challenge a plan against the existing domain model, sharpen terminology, update documentation inline.
+**What:** Interview the user relentlessly about a plan or design until reaching shared understanding, resolving each branch of the decision tree — and, when a domain model exists, also challenge the plan against it, sharpen terminology, and update documentation inline. Degrades gracefully to a plain interview when no `CONTEXT.md` exists. (Absorbed the former standalone `grill-me` skill 2026-07-12 — its procedure was a near-verbatim subset of this one; archived at `archive/2026-07/skills/utility/grill-me/`, see `docs/specs/005_skill_audit.md` Finding F2.)
 
-**Invoke when:** User wants to validate a plan against project's documented language and decisions.
+**Invoke when:** User wants to stress-test a plan or design, "grill me on this," or wants to validate a plan against the project's documented language and decisions.
 
 **Produces:** Updated `CONTEXT.md` (glossary), ADRs if warranted.
 
@@ -760,6 +766,31 @@ Each entry: **what it does** | **when to invoke** | **what it produces** | **key
 - `SKILL.md` under 100 lines — split to separate files if larger.
 - Add scripts when: operation is deterministic and same code would be generated repeatedly.
 - Pre-submit checklist: description includes triggers, no time-sensitive info, concrete examples included, consistent terminology.
+
+---
+
+## 9b. Optional Skills (0)
+
+`skills/optional/` is a tier for per-project, opt-in skills that don't apply
+universally the way core/utility skills do — kept separate so an agent
+never loads them by default. It currently has **zero active skills**.
+
+Its last occupants were `skills/optional/mcp-graph/*` (5 skills wrapping a
+`code-review-graph` MCP server for graph-powered code navigation). All five
+were archived 2026-07-12 after the `code-review-graph` MCP integration was
+confirmed dead in this environment — the dependency was retired, not
+superseded by anything:
+- `debug-issue`, `explore-codebase`, `refactor-safely`, `review-changes` →
+  `archive/2026-07/skills/optional/mcp-graph/<name>/`
+- `codebase-design` (misplaced inside `mcp-graph/` despite having no
+  graph-tool references — it described an unrelated project's folder
+  layout) → staged at `~/agent-governance/relocate-to-cad-code/` pending
+  manual move into that project's own repo; not archived, not counted in
+  the skill totals above.
+
+The `skills/optional/mcp-graph/` directory itself is left in place, empty,
+as a valid location for future opt-in skills — see
+`docs/specs/005_skill_audit.md` Findings F3–F5.
 
 ---
 

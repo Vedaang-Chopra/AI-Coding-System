@@ -41,3 +41,9 @@ def run_full_pipeline(path: str) -> FinalOutput:
 ```
 
 The pipeline function is a call list, not a logic block. If you find yourself writing conditionals in `run_full_pipeline`, extract them into a stage.
+
+## Related Skills
+
+* `SKILL: design-layered-module` — owns the full five-layer model this
+  skill's Tier 2 pattern lives inside; read that skill first when the task
+  touches module structure more broadly than just `runners.py` itself.

@@ -1,3 +1,16 @@
+> **ARCHIVED:** 2026-07-12
+> **Reason:** Dependency retired, not superseded. This skill calls tools
+> (`list_graph_stats`, `get_architecture_overview`, `list_communities`,
+> `get_community`, `semantic_search_nodes`, `query_graph`, `list_flows`,
+> `get_flow`, `children_of`, `find_large_functions`, `get_minimal_context`)
+> belonging to the `code-review-graph` MCP server. That integration is
+> confirmed dead — the server is not attached to any active session. See
+> `docs/specs/005_skill_audit.md`, Finding F4.
+> **Replaced by:** N/A — retired, no replacement.
+> **Safe to delete after:** when confirmed stable
+
+---
+
 ---
 name: explore-codebase
 description: Navigate and understand codebase structure using the knowledge graph

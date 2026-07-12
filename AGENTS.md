@@ -89,7 +89,7 @@ following files. If a file does not exist, stop and flag it — do not proceed.
 | `README.md` of every module you will touch | Module scope, entry points, restrictions |
 | `docs/session_state.md` | Current implementation state if resuming |
 
-**Skills are individual .md files in . See AGENTS.planning.md or AGENTS.execution.md for the relevant skill reference table.**
+**Skills are individual .md files in `~/agent-governance/skills/`. See AGENTS.planning.md or AGENTS.execution.md for the relevant skill reference table.**
 
 ---
 

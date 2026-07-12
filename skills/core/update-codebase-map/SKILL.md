@@ -29,26 +29,10 @@ the change. If the file doesn't exist yet, create it with all sections below.
 ### 1. Mermaid Module Dependency Diagram
 
 Update this first — it forces you to think about what changed structurally.
-
-```mermaid
-graph TD
-    notebook[notebooks/] --> iface_a[module_a/interfaces.py]
-    notebook --> iface_b[module_b/interfaces.py]
-    iface_a --> runner_a[module_a/runners.py]
-    runner_a --> core_a[module_a/core/]
-    runner_a --> shared[utils/]
-    core_a --> schema_a[module_a/schemas/]
-    iface_b --> runner_b[module_b/runners.py]
-    runner_b --> core_b[module_b/core/]
-    runner_b --> shared
-```
-
-Rules:
-- Nodes are modules or major directories — not individual files.
-- Edges show import dependencies (caller → imported).
-- If diagram exceeds 12 nodes, break into subsystem diagrams.
-- Use `graph TD` for dependency trees.
-- This diagram lives at the top of CODEBASE_MAP.md, before the text tables.
+This diagram lives at the top of CODEBASE_MAP.md, before the text tables.
+For the diagram format, example, and node/edge rules, see
+`SKILL: update-system-diagram` §1 — the canonical source for this diagram.
+Do not restate its rules here.
 
 ### 2. Top-Level Directory Structure
 Update if directories were added, removed, or renamed.

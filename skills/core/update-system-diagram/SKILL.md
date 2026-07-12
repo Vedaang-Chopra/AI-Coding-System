@@ -122,7 +122,7 @@ Run through this after any structural change:
 2. Keep diagrams minimal. Show structure, not implementation detail.
 3. Do not add a node for every file. Group by responsibility.
 4. Label edges only when the relationship type is not obvious.
-5. If a diagram has more than 15 nodes, break it into subsystem diagrams.
+5. If a diagram has more than 12 nodes, break it into subsystem diagrams.
 6. No diagram should need a legend — names should be self-explanatory.
 
 ---

@@ -1,3 +1,15 @@
+> **ARCHIVED:** 2026-07-12
+> **Reason:** Dependency retired, not superseded. This skill calls tools
+> (`detect_changes`, `get_affected_flows`, `query_graph`,
+> `get_impact_radius`, `get_minimal_context`) belonging to the
+> `code-review-graph` MCP server. That integration is confirmed dead — the
+> server is not attached to any active session. See
+> `docs/specs/005_skill_audit.md`, Finding F4.
+> **Replaced by:** N/A — retired, no replacement.
+> **Safe to delete after:** when confirmed stable
+
+---
+
 ---
 name: review-changes
 description: Perform a structured code review using change detection and impact

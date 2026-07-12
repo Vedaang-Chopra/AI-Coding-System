@@ -113,3 +113,15 @@ Memory update candidates are at the bottom — copy them into project memory bef
 - Redact API keys, passwords, tokens, PII. Note at bottom if redacted.
 - If conversation covered multiple topics, focus on user-specified argument or most active unresolved thread.
 - No chain-of-thought or internal reasoning — only conclusions and facts.
+
+---
+
+## Related Skills
+
+* `SKILL: handoff-coding-agent` — use that skill instead, not this one, when
+  the session being wrapped up is a structured coding-agent workflow with a
+  `docs/tasks/<NNN>.md` phase breakdown in progress. It writes
+  `docs/session_state.md` (always overwritten, resumed by the next agent
+  automatically) rather than this skill's one-off `/tmp/handoff_*.md`. Use
+  this skill (`handoff`) for general conversation wrap-up outside that
+  structured workflow.

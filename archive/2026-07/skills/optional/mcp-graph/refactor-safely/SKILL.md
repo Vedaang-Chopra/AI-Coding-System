@@ -1,3 +1,15 @@
+> **ARCHIVED:** 2026-07-12
+> **Reason:** Dependency retired, not superseded. This skill calls tools
+> (`refactor_tool`, `apply_refactor_tool`, `detect_changes`,
+> `get_impact_radius`, `get_affected_flows`, `find_large_functions`,
+> `get_minimal_context`) belonging to the `code-review-graph` MCP server.
+> That integration is confirmed dead — the server is not attached to any
+> active session. See `docs/specs/005_skill_audit.md`, Finding F4.
+> **Replaced by:** N/A — retired, no replacement.
+> **Safe to delete after:** when confirmed stable
+
+---
+
 ---
 name: refactor-safely
 description: Plan and execute safe refactoring using dependency analysis
