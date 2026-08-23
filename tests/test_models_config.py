@@ -92,8 +92,8 @@ def test_no_hardcoded_model_ids_in_rule_files() -> None:
             continue
         for hit in find_model_id_hits(text, model_ids):
             offenders.append(f"{path.relative_to(REPO_ROOT)}: {hit}")
-    assert not offenders, "Hardcoded model IDs outside config/models.yaml:\n" + "\n".join(
-        offenders
+    assert not offenders, (
+        "Hardcoded model IDs outside config/models.yaml:\n" + "\n".join(offenders)
     )
 
 
@@ -103,5 +103,7 @@ def test_role_names_resolve_in_config() -> None:
         data = yaml.safe_load(fh)
     planning_text = (REPO_ROOT / "AGENTS.planning.md").read_text()
     for role in ("planning", "complex-reasoning", "fast-code", "local"):
-        assert f"`{role}`" in planning_text, f"role '{role}' not documented in AGENTS.planning.md"
+        assert f"`{role}`" in planning_text, (
+            f"role '{role}' not documented in AGENTS.planning.md"
+        )
         assert role in data, f"role '{role}' missing from models.yaml"

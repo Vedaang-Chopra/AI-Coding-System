@@ -1,0 +1,26 @@
+# Canonical ruff configuration for all governed projects.
+# Copy per project (or reference via `--config`); do not fork values.
+# Line-length 100 chosen per docs/audits/generated_code_sampling_addendum_2026-08-23.md.
+
+line-length = 100
+target-version = "py311"
+
+[lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort (import order)
+    "B",   # bugbear (common bugs)
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501", # line length handled by formatter
+]
+
+[lint.isort]
+known-first-party = []
+
+[format]
+quote-style = "double"
+indent-style = "space"
