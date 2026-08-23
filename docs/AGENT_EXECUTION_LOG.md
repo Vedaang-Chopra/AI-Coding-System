@@ -352,3 +352,41 @@ is grep-matchable exactly as the spec's Validation Plan expects.
   two. Surface it as a spec Open Question and let the human decide the scope
   of any unwinding — this saved a costly wrong guess (unwinding
   checkpoint-passed, already-integrated work) in this task.
+
+---
+
+## 2026-08-23 — Model-agnostic consistency Fix Batch 1 (WS1+WS2)
+
+**Agent/model:** Hermes desktop (ox-alpha via openrouter)
+**Status:** ⚠ Partial — Tasks 1–5 + 7 complete and committed; Task 6 blocked at human gate
+
+### What was attempted
+Executed the 7-task fix batch per `.hermes/plans/2026-08-23_execution_brief_model_agnostic_batch1.md`
+with the Claude-review amendments (discovery step, complexity script reordered before skill
+wiring, "specified not mechanical" language, verbatim stdout provenance rule).
+
+### What worked
+- TDD discipline held: models guard test went RED with exactly 11 offender sites, GREEN after purge.
+- `config/models.yaml` role-based config; grep sweep over rule files now zero-hit.
+- `pi_controller.mjs` MODEL → `PI_MODEL` env var with fail-loud exit (node --check passes).
+- `tools/check_complexity_budget.py`: 10 tests green; fixed format `COMPLEXITY_BUDGET: PASS (N/B new defs)`.
+- Specified gates wired into verify-checkpoint + decompose-tasks.
+- `governance_selfcheck.py`: PASS on real repo, FAIL(3) on broken fixture (negative test verified).
+- Full validation: pytest 10/10, ruff check+format clean on tools/ and tests/.
+
+### What failed / discrepancies
+- Brief said model table lived in SYSTEM_OVERVIEW §11 — actually in AGENTS.planning.md §Model hints.
+  Purged where actually found.
+- CONVENTIONS.md did not exist despite AGENTS.md referencing it — created it (Formatting seed section).
+- System python3 is 3.9 (no tomllib): selfcheck got a try/except fallback; use python3.14 for full parse.
+- Two initial unit-test failures were fixture-count bugs in my own tests, not script bugs.
+
+### Blocked / awaiting human
+- Task 6 hard stop honored: ruff.toml copied to CAD Design + Shastra but `ruff format` NOT applied.
+  Churn: CAD 1,711 files/~58k lines, ~7k lint findings (incl. 191 F821 needing triage);
+  Shastra 93 files/~480 findings. Decisions needed: lint-ignore strategy, safe-fix scope,
+  handling of Shastra's pre-existing dirty notebooks.
+
+### Do-not-repeat
+- Verify brief file references (CONVENTIONS.md, §11) against disk before executing — two were wrong.
+- copytree fixtures must pass symlinks=True or broken skill symlinks abort the copy.
