@@ -2,3 +2,15 @@
 .agent_runs/
 **/__pycache__/
 *.pyc
+
+# Agent scratch / session state — never publish
+.hermes/
+
+# Symlinks into ~/.agents — broken for anyone else cloning
+skills/companion-clis
+skills/flash
+skills/runpod
+skills/runpod-mcp
+skills/runpod-migrate
+skills/runpod-usage
+skills/runpodctl
