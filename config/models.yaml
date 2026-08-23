@@ -1,0 +1,41 @@
+# Single source of truth for model aliases across the agent-governance system.
+# Roles are referenced by name in AGENTS files, skills, and controller code —
+# never by model ID. To swap models, edit only this file.
+#
+# Fields per role:
+#   models:        model IDs in priority order (first = primary)
+#   rate_tier:     paid | free | local
+#   use_case:      where this role applies
+#   fallback:      next alias in the fallback chain (optional)
+
+planning:
+  models:
+    - claude-sonnet-4-6
+    - gpt-4o
+  rate_tier: paid
+  use_case: Spec, plan, decompose-tasks — planning agents (Claude Code or Codex) only
+
+complex-reasoning:
+  models:
+    - claude-sonnet-4-6
+  rate_tier: paid
+  use_case: Debugging, architecture, multi-file refactors
+  fallback: fast-code
+
+fast-code:
+  models:
+    - gpt-5.4-mini
+  rate_tier: free
+  use_case: Boilerplate, simple functions, schema definitions
+  fallback: local
+
+local:
+  models:
+    - nemotron
+  rate_tier: local
+  use_case: Simple edits, renaming, formatting
+
+# Global execution defaults
+execution:
+  fallback_chain: complex-reasoning → fast-code → local
+  rate_limit_wait_seconds: 60
