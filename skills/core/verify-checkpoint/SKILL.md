@@ -93,6 +93,27 @@ If FAIL, produce this instead:
 
 ---
 
+## Specified Gates (mandatory checkpoint items)
+
+These gates are **specified, not mechanically enforced**: they are precise and
+greppable, but an executing agent must choose to run them and report honestly.
+Always-fires enforcement would require hooks (PreToolUse/PostToolUse/Stop) and
+is explicitly deferred to a future workstream.
+
+Every phase checkpoint that touched Python code MUST include these three items
+in its results table:
+
+1. **Style gate:** `ruff check .` with the project's ruff config (copied from
+   `templates/ruff.toml`) — result PASS only on "All checks passed!".
+2. **Type-B artifact gate:** for tasks whose type is Type-B, confirm by file
+   existence check that BOTH the notebook AND the integration test file named
+   in the task exist (`test -f <path>` per file).
+3. **Complexity budget gate:** run
+   `python tools/check_complexity_budget.py --repo . --range <diff-range> --budget <N>`
+   and record its `COMPLEXITY_BUDGET: PASS|FAIL ...` line VERBATIM in the
+   checkpoint output. A FAIL line means the checkpoint FAILS. Copy the raw line
+   into AGENT_EXECUTION_LOG.md — paraphrasing it is a task FAIL.
+
 ## Valid Checkpoint Items
 
 A checkpoint item is valid if it has a binary result and can be run mechanically.
@@ -101,6 +122,8 @@ Valid:
 - `pytest tests/test_<module>.py -v` with expected pass count
 - `python -m module.runners` exits with code 0
 - `python -c "from module.interfaces import X; print(X)"` prints without error
+- `ruff check .` exits 0 (specified gate #1)
+- `python tools/check_complexity_budget.py ... ` prints a COMPLEXITY_BUDGET line (specified gate #3)
 - Specific notebook section runs from top to bottom without raising
 - File exists at a specific path and is non-empty
 - `grep -r "hardcoded_value" module/` returns no results

@@ -50,6 +50,17 @@ Omitting any field means the task is not executable by a smaller model.
 **Checkpoint:** [which phase checkpoint this task contributes to]
 **AGENT_EXECUTION_LOG notes:** [any known failure patterns from the log relevant to this task; "none" if clean]
 **Complexity budget:** <N new functions expected>
+
+Every task that creates or modifies Python files MUST also state its
+complexity-budget verification command, using
+`tools/check_complexity_budget.py` (see verify-checkpoint skill, specified
+gates). At phase checkpoints, each task's budget is checked against its diff
+range and the raw `COMPLEXITY_BUDGET:` line is recorded verbatim in the
+checkpoint output and AGENT_EXECUTION_LOG.md. Checkpoints additionally require:
+ruff green (`ruff check .`, config from `templates/ruff.toml`) and, for Type-B
+tasks, file-existence proof of both the notebook and its integration test.
+These are specified gates — greppable but agent-run — not mechanical
+enforcement; hooks-based enforcement is deferred to a future workstream.
 **Max call depth:** ≤4
 **Interface form constraint:** Re-export only | Wrapper (reason: <state>) | N/A
 **Error contract:** Returns <type> on success | Returns None / raises <Error> on failure
