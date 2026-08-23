@@ -42,7 +42,7 @@
 |---|---|
 | Universal rules (all agents) | `~/agent-governance/AGENTS.md` |
 | Planning rules (Claude Code / Codex only) | `~/agent-governance/AGENTS.planning.md` |
-| Execution rules (Pi + GPT-5.4-mini only) | `~/agent-governance/AGENTS.execution.md` |
+| Execution rules (Pi, `fast-code` role only) | `~/agent-governance/AGENTS.execution.md` |
 | Project overrides | `<project-root>/AGENTS.md` — extends global, no duplication |
 | Template for new projects | `~/agent-governance/templates/project-AGENTS.md` |
 | Core skills (25) | `~/agent-governance/skills/core/<skill-name>/SKILL.md` |

@@ -1,12 +1,12 @@
 # Issues Found Driving Pi Directly (from Claude, CAD Design repo)
 
-Source: repeated attempts to have Pi (`openai/gpt-5.4-mini` via the `pi` CLI,
+Source: repeated attempts to have Pi (the `fast-code`-role model via the `pi` CLI,
 v0.79.10) execute a 2-line config fix
 (`code_base/agentic_closed_loop/modules/agent_langgraph/config/schemas.py:58`
 and `state/repair_state.py:278`, `max_turns` 2->3) in
 `/Users/vedaangchopra/all_data/complete_technical_work/all_projects_implemented/CAD Design`.
 Every attempt below used the same base invocation the controller uses:
-`pi --model openai/gpt-5.4-mini --no-extensions --no-skills -p "<instruction>"`
+`pi --model $PI_MODEL --no-extensions --no-skills -p "<instruction>"`
 (plus flag variations noted per row). **The task never succeeded — both target
 lines are still `= 2`.**
 

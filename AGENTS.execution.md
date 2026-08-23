@@ -1,4 +1,4 @@
-# Execution Agent Rules (Pi + GPT-5.4-mini)
+# Execution Agent Rules (Pi — `fast-code` role)
 # Read this file + ~/agent-governance/AGENTS.md (universal rules).
 # Do NOT read AGENTS.planning.md — it is not for you.
 # Canonical location: ~/agent-governance/AGENTS.execution.md

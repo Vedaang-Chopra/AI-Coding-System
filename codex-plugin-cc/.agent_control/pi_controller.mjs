@@ -5,7 +5,11 @@ import path from "node:path";
 import process from "node:process";
 import { spawn, spawnSync } from "node:child_process";
 
-const MODEL = "openai/gpt-5.4-mini";
+const MODEL = process.env.PI_MODEL;
+if (!MODEL) {
+  console.error("PI_MODEL env var is required (see config/models.yaml, fast-code role).");
+  process.exit(1);
+}
 const NO_OUTPUT_WARNING_MS = Number(process.env.PI_CONTROLLER_NO_OUTPUT_WARNING_MS || 300000);
 const RECENT_LOG_LINES = Number(process.env.PI_CONTROLLER_LOG_LINES || 120);
 const FEEDBACK_POLL_MS = Number(process.env.PI_CONTROLLER_FEEDBACK_POLL_MS || 500);

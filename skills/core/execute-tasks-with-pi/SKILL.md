@@ -9,8 +9,8 @@ description: >
   providing an alternative, tighter-loop invocation mechanism: one pi
   subprocess per task instead of one long interactive pi session working
   through many tasks unsupervised. Prefer this pattern when the execution
-  model is known to be unreliable on compound instructions (e.g.
-  gpt-5.4-mini) and the planning agent wants to independently verify after
+  model is known to be unreliable on compound instructions (e.g. whatever
+  fills the `fast-code` role in config/models.yaml) and the planning agent wants to independently verify after
   every single task rather than after a whole batch. Triggers: "use pi to
   execute this", "delegate to pi", "run this through the coding agent",
   "log the pi run", "verify via pi".
@@ -40,7 +40,7 @@ trust boundary.
 ## Why this exists (evidence, not assumption)
 
 A prior delegation attempt (project: CAD Design, 2026-07-08) gave pi/
-gpt-5.4-mini a real task ("move two functions, keep the public re-export
+the `fast-code`-role model a real task ("move two functions, keep the public re-export
 contract"). Pi's own self-reported verification (`pytest` passed) was
 accurate but incomplete — it had silently broken the re-export it was told
 not to touch, and the existing test suite didn't cover that specific surface.
@@ -93,10 +93,10 @@ hardcoded paths — `query_pi_log.py` defaults to
 ## Invocation syntax
 
 ```bash
-pi --provider openai-codex --model gpt-5.4-mini --mode json -p "<single, atomic instruction>"
+pi --provider openai-codex --model <fast-code-role-model> --mode json -p "<single, atomic instruction>"
 ```
 
-Plain `--model gpt-5.4-mini` alone resolves to `azure-openai-responses`
+A bare `--model <fast-code-role-model>` alone resolves to `azure-openai-responses`
 (usually no key configured) — `--provider openai-codex` is mandatory. Swap
 provider/model for whatever this project's actual execution-model alias
 resolves to; the mechanism below is model-agnostic.
@@ -264,7 +264,7 @@ that volume entirely. This is a real, measured effect, not a projection.
 
 ---
 
-## Known reliability lessons (gpt-5.4-mini via pi, confirmed 2026-07-08/09)
+## Known reliability lessons (`fast-code`-role model via pi, confirmed 2026-07-08/09)
 
 - Compound, multi-file, multi-constraint prompts increase the chance of a
   silently-incomplete edit (see the re-export incident above). Split further

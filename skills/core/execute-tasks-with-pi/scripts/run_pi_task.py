@@ -14,6 +14,8 @@ Usage:
 
 from __future__ import annotations
 
+import os
+
 import argparse
 import json
 import subprocess
@@ -39,7 +41,7 @@ def run_pi_task(
     prompt: str,
     *,
     provider: str = "openai-codex",
-    model: str = "gpt-5.4-mini",
+    model: str | None = None,  # default resolved from PI_MODEL env at call site
     timeout_s: int = DEFAULT_TIMEOUT_S,
     out_path: Path,
 ) -> dict:
@@ -142,7 +144,9 @@ def main() -> None:
     prompt_group.add_argument("--prompt", help="Prompt text to send to pi")
     prompt_group.add_argument("--prompt-file", help="Path to a file whose contents are the prompt")
     parser.add_argument("--provider", default="openai-codex")
-    parser.add_argument("--model", default="gpt-5.4-mini")
+    parser.add_argument("--model", default=os.environ.get("PI_MODEL"))
+    if not parser.get_default("--model"):
+        parser.error("--model or PI_MODEL env var is required (see config/models.yaml)")
     parser.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT_S, help="Timeout in seconds")
     parser.add_argument("--out", required=True, help="Path to save the raw NDJSON stdout stream")
     args = parser.parse_args()

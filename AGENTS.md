@@ -11,7 +11,7 @@
 
 Universal rules for ALL agents. Read this first, always.
 - **Planning agents (Claude Code, Codex):** Read this + `~/agent-governance/AGENTS.planning.md`
-- **Execution agents (Pi + GPT-5.4-mini):** Read this + `~/agent-governance/AGENTS.execution.md`
+- **Execution agents (Pi, running the `fast-code` role):** Read this + `~/agent-governance/AGENTS.execution.md`
 Do not read both extension files. Each agent reads only its own.
 
 ---

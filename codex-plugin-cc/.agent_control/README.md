@@ -26,7 +26,7 @@ node .agent_control/pi_controller.mjs verify <job_id> "npm test"
 Every job uses the local `pi` binary:
 
 ```bash
-pi --model openai/gpt-5.4-mini --no-extensions --no-skills --session-dir "<job_dir>/pi-session" -p "<instruction>"
+pi --model $PI_MODEL --no-extensions --no-skills --session-dir "<job_dir>/pi-session" -p "<instruction>"
 ```
 
 The per-job `--session-dir` prevents concurrent or rapid jobs from sharing Pi's default project session directory under `~/.pi/agent/sessions`.

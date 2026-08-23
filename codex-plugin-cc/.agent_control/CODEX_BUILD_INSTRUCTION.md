@@ -3,7 +3,7 @@
 ## Context
 
 Read `.agent_control/ISSUES_FROM_CLAUDE.md` first — it documents 5 concrete
-problems Claude hit trying to drive `pi` (openai/gpt-5.4-mini) directly and
+problems Claude hit trying to drive `pi` (the `fast-code`-role model per config/models.yaml) directly and
 through this controller, with evidence from real reproductions and from this
 repo's own `.agent_runs/pi/*` history. Read `.agent_control/pi_controller.mjs`
 and `.agent_control/README.md` next so you know the current design before

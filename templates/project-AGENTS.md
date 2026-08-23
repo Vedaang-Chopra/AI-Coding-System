@@ -30,18 +30,16 @@ If it is missing, stop and tell the human.
 
 ## Model Registry
 
-This registry overrides the global defaults in ~/agent-governance/AGENTS.md §14.
-Pi reads this table when executing tasks annotated with model hints.
+Canonical model aliases live in `~/agent-governance/config/models.yaml`; see there for current mappings.
+Do not restate model IDs here. Project-level overrides list ONLY the roles whose models differ:
 
-| Alias | Models (priority order) | Rate tier | Use case |
-|---|---|---|---|
-| `planning` | claude-sonnet-4-6, gpt-4o | paid | Spec, plan, decompose only |
-| `complex-reasoning` | [model-1], [model-2] | paid / free | Complex logic, debugging |
-| `fast-code` | [model-1], [model-2] | free (rate limited) | Boilerplate, simple functions |
-| `local` | [ollama-model-name] | local, unlimited | Simple edits, formatting |
+```yaml
+# overrides vs config/models.yaml (roles not listed inherit global values)
+fast-code:
+  models: [<model-id>]
+```
 
-**Fallback chain:** complex-reasoning → fast-code → local
-**Rate limit wait:** 60 seconds before retry on free-tier models.
+**Fallback chain** and **rate limit wait** are defined globally in that file and apply unless overridden.
 
 ---
 
