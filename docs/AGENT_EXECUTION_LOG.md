@@ -390,3 +390,9 @@ wiring, "specified not mechanical" language, verbatim stdout provenance rule).
 ### Do-not-repeat
 - Verify brief file references (CONVENTIONS.md, §11) against disk before executing — two were wrong.
 - copytree fixtures must pass symlinks=True or broken skill symlinks abort the copy.
+
+### Follow-up (2026-08-27): Task 6 executed
+COMPLEXITY_BUDGET: n/a (governance side unchanged; no new python)
+- Applied format to pilots; disclosures above in session_state.md.
+- Do-not-repeat #3: when diffing dirty-set lists with awk on porcelain output, use $NF (or sed),
+  never $2 — ' M'-prefixed lines collapse and silently shrink the exclusion set.

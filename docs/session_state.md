@@ -34,3 +34,13 @@
 - Hooks-based mechanical enforcement (PreToolUse/PostToolUse/Stop) explicitly deferred —
   recommended as next workstream.
 - Neither pilot project has confirmed runnable pytest suites; verify before any style commit.
+
+### Update — Task 6 completed (2026-08-27, current model exec)
+- ruff format applied: CAD Design 400 active .py files (commit a0ea689), Shastra 51 (commit ac5929e).
+- Post-checks: format --check clean in both; CAD suite collects 954 tests OK.
+- ⚠ Disclosure: both "style-only" commits also captured pre-existing user-index state that my
+  pre-dirty filter missed (awk '{print $2}' loses filenames on ' M' lines): in Shastra, 14 R100
+  doc-plan renames to archive (user's own restructure); in CAD, 6 visualization .py files whose
+  uncommitted user edits rode along with the format pass. Content is user-authored + formatter;
+  no third-party logic introduced. Offer: surgical index-split follow-up if desired.
+- Shastra branch analysis-v2 restored intact after checkout detour; stash verified byte-equal then dropped.
