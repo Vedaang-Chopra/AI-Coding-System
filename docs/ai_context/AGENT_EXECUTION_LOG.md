@@ -111,7 +111,7 @@ Use Python 3.14 for the repository's current Python validation environment, set 
 - `docs/session_state.md`
 
 **Verify result:**
-`python3.14 tools/governance_selfcheck.py` → `GOVERNANCE_SELFCHECK: PASS (0 findings)`; `python3.14 -m pytest tests/ -q` → 10 passed; `PI_MODEL=gpt-5.4-mini npm test` in `codex-plugin-cc/` → 94 passed; local Markdown links → 0 broken; `git diff --check` → pass.
+`python3.14 tools/governance_selfcheck.py` → `GOVERNANCE_SELFCHECK: PASS (0 findings)`; `python3.14 -m pytest tests/ -q` → 10 passed; `PI_MODEL=gpt-5.4-mini npm test` in `codex-plugin-cc/` → 94 passed; local Markdown links → 0 broken; `git diff --check` → pass. Commit `fb3288e` was pushed to `origin/main`; a subsequent fetch confirmed remote HEAD matched local. GitHub reported the repository as public at final verification; this task did not change visibility.
 
 **Model fallback used:** no
 

@@ -2,7 +2,7 @@
 
 ## 2026-10-22 — Repository documentation
 
-**Status:** Documentation completed and validated; push pending.
+**Status:** Documentation committed and pushed to `origin/main`; final fetch verified the remote matches local HEAD.
 
 ### Changes in scope
 - Added a root README, contribution and security guidance, three missing agent-context documents, and three human operating guides.
@@ -14,9 +14,11 @@
 - `python3.14 -m pytest tests/ -q` → 10 passed.
 - `PI_MODEL=gpt-5.4-mini npm test` in `codex-plugin-cc/` → 94 passed on the final run.
 - Markdown local-link check → 0 broken links; `git diff --check` → pass.
+- Commit `fb3288e` was pushed; the subsequent fetch confirmed local and remote `main` matched.
 
-### Follow-up / limitations
-- No root-level license has been selected; do not assume the nested plugin license applies to this repository.
+### Publication and follow-up
+- GitHub reported this repository as **PUBLIC** at final verification; this task did not change its visibility.
+- No root-level license has been selected; do not assume the nested plugin license applies to this repository. Public visibility alone does not grant an open-source license.
 - The root Python tests have no dependency manifest; they require `pytest` and `PyYAML` in the active environment.
 - Some governance requirements are procedural rather than automatically enforced.
 
