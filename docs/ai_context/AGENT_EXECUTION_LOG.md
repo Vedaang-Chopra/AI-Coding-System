@@ -75,6 +75,51 @@ Copy this block and fill it in. Add at the TOP of the Entries section.
 
 <!-- New entries go HERE, at the top -->
 
+## DOCS-001 — Repository documentation and context maps
+**Date:** 2026-10-22
+**Agent:** Hermes
+**Model:** gpt-6-luna-900k
+**Status:** ✓ Complete
+
+**Approach taken:**
+Added a root project README, contribution and security guidance, the missing agent-context maps, and concise human operating guides. Moved the existing execution log to its documented canonical location without discarding its history.
+
+**What worked:**
+The repository self-check and Python tests passed with Python 3.14. The plugin's full Node test suite passed on rerun with `PI_MODEL` set. Markdown local-link checks and `git diff --check` passed.
+
+**What failed:**
+The default `python3 -m pytest` invocation could not import pytest. The first plugin run had four Pi-controller test failures because `PI_MODEL` was unset. The next configured plugin run had one transient background-job lookup failure; the subsequent identical run passed all 94 tests.
+
+**Root cause:**
+The system `python3` points to an environment without pytest; Python 3.14 has the test dependencies. The Pi controller deliberately exits when `PI_MODEL` is absent. The one background-job lookup failure did not reproduce on rerun; its cause is unknown.
+
+**Resolution:**
+Use Python 3.14 for the repository's current Python validation environment, set `PI_MODEL` from the configured fast-code role before running plugin tests, and preserve the initial transient failure in this record rather than treating the first run as green.
+
+**Files modified:**
+- `README.md`
+- `CONTRIBUTING.md`
+- `SECURITY.md`
+- `docs/ai_context/DOC_TAXONOMY.md`
+- `docs/ai_context/CODEBASE_MAP.md`
+- `docs/ai_context/SYSTEM_WORKFLOW_MAP.md`
+- `docs/ai_context/AGENT_EXECUTION_LOG.md` (relocated from `docs/AGENT_EXECUTION_LOG.md`)
+- `docs/ai_context/pi_agent_tooling_guide.md`
+- `docs/human_docs/system_overview.md`
+- `docs/human_docs/how_to_run.md`
+- `docs/human_docs/how_to_debug.md`
+- `docs/session_state.md`
+
+**Verify result:**
+`python3.14 tools/governance_selfcheck.py` → `GOVERNANCE_SELFCHECK: PASS (0 findings)`; `python3.14 -m pytest tests/ -q` → 10 passed; `PI_MODEL=gpt-5.4-mini npm test` in `codex-plugin-cc/` → 94 passed; local Markdown links → 0 broken; `git diff --check` → pass.
+
+**Model fallback used:** no
+
+**DO NOT REPEAT:**
+- Do not run the Pi-controller plugin tests without setting `PI_MODEL`.
+- Do not assume the default `python3` has pytest installed; check the active interpreter first.
+- Do not claim the full plugin test suite is green based on the first attempt; one configured rerun had a transient failure before the complete pass.
+
 ## Task: 004 — Sync codex-plugin-cc into main repo
 
 **Date:** 2026-07-11

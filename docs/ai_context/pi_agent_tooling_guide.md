@@ -4,7 +4,7 @@
 
 **Purpose:** explain how to run Pi as a terminal coding harness, how to load its local capabilities, and how to coordinate Pi from another agent without inventing unsupported behavior.
 
-**Primary local references used:** `AGENTS.md`, `AGENTS.execution.md`, `AGENTS.planning.md`, `SYSTEM_OVERVIEW.md`, `docs/AGENT_EXECUTION_LOG.md`, `templates/DOC_TAXONOMY.md`, `templates/CODEBASE_MAP.md`, `templates/SYSTEM_WORKFLOW_MAP.md`, and the installed Pi docs under `@earendil-works/pi-coding-agent`.
+**Primary local references used:** `AGENTS.md`, `AGENTS.execution.md`, `AGENTS.planning.md`, `SYSTEM_OVERVIEW.md`, `docs/ai_context/AGENT_EXECUTION_LOG.md`, `templates/DOC_TAXONOMY.md`, `templates/CODEBASE_MAP.md`, `templates/SYSTEM_WORKFLOW_MAP.md`, and the installed Pi docs under `@earendil-works/pi-coding-agent`.
 
 ---
 
@@ -43,7 +43,7 @@ Before delegating real work to Pi in this governance repo, remember the local ru
 - Planning agents read `AGENTS.planning.md`; execution agents read `AGENTS.execution.md`.
 - Run `git status` before modifying tracked files.
 - Do not touch secrets or destructive commands without human confirmation.
-- Update `docs/AGENT_EXECUTION_LOG.md` after task completion in this checkout.
+- Update `docs/ai_context/AGENT_EXECUTION_LOG.md` after task completion in this checkout.
 
 ---
 
@@ -735,7 +735,7 @@ console.log(loader.getAgentsFiles().agentsFiles);
 pi --approve \
   --name "governance-task-002" \
   --tools read,bash,edit,write,grep,find,ls \
-  -p "Read AGENTS.md and AGENTS.execution.md. Execute only the approved task in docs/tasks. Update docs/AGENT_EXECUTION_LOG.md."
+  -p "Read AGENTS.md and AGENTS.execution.md. Execute only the approved task in docs/tasks. Update docs/ai_context/AGENT_EXECUTION_LOG.md."
 ```
 
 ### C. Run Read-Only Parallel Reviews
@@ -1116,7 +1116,7 @@ This repository is the governance repo used by Pi, Codex, and Claude Code. A fut
 - Pi execution agents read `AGENTS.md` plus `AGENTS.execution.md`.
 - Planning agents read `AGENTS.md` plus `AGENTS.planning.md`.
 - Task execution should be task-file driven and separately verifiable.
-- `docs/AGENT_EXECUTION_LOG.md` is the live log file in this checkout, even though several templates refer to `docs/ai_context/AGENT_EXECUTION_LOG.md`.
+- The live execution log is `docs/ai_context/AGENT_EXECUTION_LOG.md`. Older historical entries may refer to its former path, `docs/AGENT_EXECUTION_LOG.md`.
 - Do not create structures, modules, or patterns not specified by the task/spec.
 - For docs-only tasks, do not drift into code or package changes.
 
